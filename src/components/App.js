@@ -10,8 +10,16 @@ import EditProfilePopup from '../components/EditProfilePopup.js';
 import EditAvatarPopup from '../components/EditAvatarPopup.js';
 import AddPlacePopup from '../components/AddPlacePopup.js';
 import exApi from '../utils/Api.js';
+import {objAuth} from '../utils/Utils.js';
 
+// использование контекста
 import {CurrentUserContext} from '../context/CurrentUserContext.js';
+
+// импорт компонентов для route
+import { Route, Switch, withRouter, useHistory } from 'react-router-dom';
+import ProtectedRoute from '../components/ProtectedRoute.js';
+import Login from '../components/Login';
+import Register from '../components/Register';
 
 function App() {
   const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = React.useState(false)
@@ -25,18 +33,35 @@ function App() {
   const promiseAuthorInfo = exApi.getAuthorInfo();
   const promiseAllCard = exApi.getInitCards();
 
-  const [isThinking, setIsThinking] = React.useState(false)
-    
+  const [isThinking, setIsThinking] = React.useState(false);
+
+  // Авторизация
+  const [loggedIn, setLoggedIn] = React.useState(false);
+  const [isLoginPopupOpen, setLoginPopupOpen] = React.useState(false);
+  const [isRegisterPopupOpen, setRegisterPopupOpen] = React.useState(false);
+  const [arrAuth, setArrAuth] = React.useState(objAuth.authExit);
+
+  const history = useHistory();
+
+  const [messageInfo, setMessageInfo] = React.useState('messageOk');
+  const [mailUserInfo, setMailUserInfo] = React.useState('');
+          
   React.useEffect(() => {
     Promise.all([promiseAuthorInfo, promiseAllCard])
      .then(([resAuthor, resAllCards]) => {
       setCurrentUser(resAuthor);
-      setCards(resAllCards); 
+      setCards(resAllCards);
      })
      .catch((err) => {
         console.log('Ошибка. Запрос к серверу не выполнен: ', err)
      })
   }, []);
+
+  React.useEffect(() => {
+    if (!loggedIn) {
+      handleTokenCheck(exApi);
+    }
+  }, [loggedIn]);
 
   // Kusto
   function handleEditProfileClick() {
@@ -85,7 +110,10 @@ function App() {
   }
   function handleCardLike(card) {
     const isLiked = card.likes.some(i => i._id === currentUser._id);
-    setInfoOpen(true);
+
+    // setThinkingInfo(infoText.messageInfo);
+
+    // setInfoOpen(true);
     (isLiked ? exApi.putoffLikeFromCard(card._id) : exApi.putLikeToCard(card._id))    
     .then((newCard) => {
       setCards((cards) => cards.map((c) => c._id === card._id ? newCard : c));
@@ -94,11 +122,12 @@ function App() {
       console.log('Ошибка. Запрос к серверу не выполнен: ', err)
    })
    .finally(() =>{
-    setInfoOpen(false);
+    // setInfoOpen(false);
    });
   }
   function handleCardDelete(card) {
-    setInfoOpen(true);
+    // setThinkingInfo(infoText.messageInfo);
+    // setInfoOpen(true);
     exApi.deleteCardFromServer(card._id)    
     .then((newCard) => {
       setCards((cards) => cards.filter((c) => {return (c._id != card._id)}))
@@ -107,7 +136,7 @@ function App() {
       console.log('Ошибка. Запрос к серверу не выполнен: ', err)
    })
    .finally(() =>{
-    setInfoOpen(false);
+    // setInfoOpen(false);
    });
   }
   function handleAddPlaceSubmit (cardInfo) {
@@ -131,23 +160,101 @@ function App() {
     setEditProfilePopupOpen(false);
     setAddPlacePopupOpen(false);
     setSelectedCard({isOpen:false, cardPicture:'', cardText:''});
+    setInfoOpen(false);
   }
-    
+
+  // Авторизация
+  function handleTokenCheck(exApi) {
+    if (localStorage.getItem('jwt')) {
+      exApi.userCheckToken(localStorage.getItem('jwt')).then((res) => {
+        if (res) {
+          setMailUserInfo(res.data.email);
+          setLoggedIn(true);
+          history.push("/");
+        }
+      })
+      .finally(() =>{
+        if (!loggedIn) {
+          setLoginPopupOpen(true);
+        }
+      })
+    }
+  }
+
   return (
-    <div className="body">
+    <div className="body" style={{minHeight: `100vh`}}>
     <div className="page">
     <CurrentUserContext.Provider value={currentUser}>
-      <Header />
-      <Main 
-        cards = {cards}
-        onCardLike = {handleCardLike}
-        onCardDelete = {handleCardDelete}
-        onEditProfile={handleEditProfileClick}
-        onAddPlace={handleAddPlaceClick}
-        onEditAvatar={handleEditAvatarClick}
-        onCardClick={handleCardClick}
-        onClose = {closeAllPopups}
+      <Header 
+        loggedIn = {loggedIn}
+        setLoggedIn = {setLoggedIn}
+        history = {history}
+
+        arrAuth = {arrAuth}
+        setArrAuth = {setArrAuth}
+
+        mailUserInfo = {mailUserInfo}
+        setMailUserInfo = {setMailUserInfo}
+
+        setRegisterPopupOpen = {setRegisterPopupOpen}
+        isRegisterPopupOpen = {isRegisterPopupOpen}
       />
+      <Switch>
+        <ProtectedRoute exact path="/"
+            component ={Main}
+            cards = {cards}
+            onCardLike = {handleCardLike}
+            onCardDelete = {handleCardDelete}
+            onEditProfile={handleEditProfileClick}
+            onAddPlace={handleAddPlaceClick}
+            onEditAvatar={handleEditAvatarClick}
+            onCardClick={handleCardClick}
+            onClose = {closeAllPopups}
+            loggedIn = {loggedIn}            
+        />
+        <Route path="/sign-up">
+          <Register
+            exApi={exApi}
+            handleLogin={setLoggedIn}
+            loggedIn={loggedIn}
+            handleLoginOpen={setLoginPopupOpen}
+            isRegOpen = {isRegisterPopupOpen}
+            change
+            onClose = {closeAllPopups}
+            isThinking = {isThinking}
+            setLoginPopupOpen = {setRegisterPopupOpen}
+            setRegisterPopupOpen = {setRegisterPopupOpen}
+            isRegisterPopupOpen = {isRegisterPopupOpen}
+            setInfoOpen = {setInfoOpen}
+            isInfoOpen = {isInfoOpen}
+            messageInfo = {messageInfo}
+            setMessageInfo = {setMessageInfo}
+            mailUserInfo = {mailUserInfo}
+            setMailUserInfo = {setMailUserInfo}
+            history = {history}
+            setArrAuth = {setArrAuth}
+          />
+        </Route>
+        <Route path="/sign-in">
+          <Login
+            exApi={exApi}
+            loggedIn={loggedIn}
+            handleLogin={setLoggedIn}
+            handleLoginOpen={setLoginPopupOpen}
+            isOpen = {isLoginPopupOpen}
+            onClose = {closeAllPopups}
+            setLoginPopupOpen = {setLoginPopupOpen}
+            setRegisterPopupOpen = {setRegisterPopupOpen}
+            isRegisterPopupOpen = {isRegisterPopupOpen}
+            setInfoOpen = {setInfoOpen}
+            isInfoOpen = {isInfoOpen}
+            messageInfo = {messageInfo}
+            setMessageInfo = {setMessageInfo}
+            mailUserInfo = {mailUserInfo}
+            setMailUserInfo = {setMailUserInfo}
+          />      
+        </Route>
+      </Switch>
       <Footer />
 
       <EditProfilePopup
@@ -171,18 +278,18 @@ function App() {
         isThinking = {isThinking}>
       </EditAvatarPopup>
 
-      <PopupInfo 
-        isOpen = {isInfoOpen}
-        title = "Вношу изменения в базу"
-        name = "changeWriting">
-      </PopupInfo>
-
       <PopupWithForm 
         title = "Вы уверены?"
         name = "avatarcardDeleteEdit"
         submit = "Да"
         onClose = {closeAllPopups}>
       </PopupWithForm>
+
+      <PopupInfo 
+        infoPop = {messageInfo}
+        isOpened = {isInfoOpen}
+        onClose = {closeAllPopups}>
+      </PopupInfo>
 
       <ImagePopup 
         picture = {selectedCard.cardPicture}
@@ -196,4 +303,7 @@ function App() {
   );
 }
 
-export default App;
+export default withRouter(App);
+
+/*
+*/

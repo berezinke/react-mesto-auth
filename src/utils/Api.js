@@ -1,13 +1,43 @@
 // import React from 'react';
-import {pathToServer, headers} from './Utils.js'
+import {pathToServer, headers, baseUrl, baseEndPointReg, baseEndPointAuth, baseMethodAuth, baseTitle,
+  baseSuccessReturnAuth, baseSuccessReturnCheck,
+  tokenEndPoint, baseMethodValidToken, baseTitleValidToken, baseSuccessReturnValidToken } 
+  from './Utils.js'
 
 class Api {
-  constructor(pathToServer, headers) {
+  constructor() {
+
+    /**
+     pathToServer, headers1, baseUrl, baseEndPointReg, baseEndPointAuth, baseMethodAuth, baseTitle,
+    baseSuccessReturnAuth, baseSuccessReturnCheck,
+    baseMethodValidToken, baseTitleValidToken, baseSuccessReturnValidToken
+     */
+
     this._pathToCard = `${pathToServer}/cards`;
     this._pathToAuthor = `${pathToServer}/users/me`;
     this._pathToAvatar = this._pathToAuthor + '/avatar';
-
     this._headers = headers;
+    this._baseUrl = baseUrl;
+    this._methodAuth = baseMethodAuth;
+    this._baseTitle = baseTitle;
+    this._baseEndPointReg = baseEndPointReg;
+    this._baseEndPointAuth = baseEndPointAuth;
+    
+    this._tokenEndPoint = tokenEndPoint;
+    this._baseMethodValidToken = baseMethodValidToken;
+    this._baseTitleValidToken = baseTitleValidToken;
+
+    /*this._baseUrl = this._baseUrl.bind(this);
+    this._methodAuth = this._methodAuth.bind(this);
+    this._baseTitle = this._baseTitle.bind(this);
+    this._baseEndPointReg = this._baseEndPointReg.bind(this);
+    this._baseEndPointAuth = this._baseEndPointAuth.bind(this);
+    
+    this._tokenEndPoint = this._tokenEndPoint.bind(this);
+    this._baseMethodValidToken = this._baseMethodValidToken.bind(this);
+    this._baseTitleValidToken = this._baseTitleValidToken.bind(this);*/
+
+
   };
 
   // Запись и обратно
@@ -102,7 +132,52 @@ class Api {
       return this._isDone(res)
    })
   };
+
+  // Авторизация
+  userAuthorize (userEmail, userPassword) {
+    return fetch(this._baseUrl + this._baseEndPointAuth, {
+      method: this._methodAuth,
+      headers: this._baseTitle,
+      body: JSON.stringify({"email":userEmail, "password": userPassword})
+    })
+    .then((res) => {return this._isDone(res)})
+  };
+
+  // Регистрация
+  userRegister (userEmail, userPassword) {
+    return fetch(this._baseUrl + this._baseEndPointReg, {
+      method: this._methodAuth,
+      headers: this._baseTitle,
+      body: JSON.stringify({"email": userEmail, "password": userPassword})    
+    })
+    .then((res) => {return this._isDone(res)})
+    .then((res) => {
+      
+      return res;
+    })
+    .catch((err) => console.log(err));
+  };
+
+  // Проверка токена
+  userCheckToken (userJWT) {
+    this._baseTitleValidToken.Authorization = this._baseTitleValidToken.Authorization + userJWT;
+    // this._baseTitleValidToken.Authorization = this._baseTitleValidToken.Authorization + etalon;
+    let path = this._baseUrl + this._tokenEndPoint;
+    let arrHeaders = this._baseTitleValidToken;
+    let meTh = this._baseMethodValidToken;
+
+    return fetch(path, {
+      method: meTh,
+      headers: arrHeaders})
+    .then((res) => {
+      return this._isDone(res)})
+    .then((res) => {
+      return res;
+    })
+    .catch((err) => {
+      console.log(err)});
+  }
 };
 
-const exApi = new Api(pathToServer, headers);
+const exApi = new Api(); //pathToServer, headers
 export default exApi;

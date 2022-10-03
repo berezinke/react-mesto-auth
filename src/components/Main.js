@@ -1,4 +1,5 @@
 import React from 'react';
+
 import Card from '../components/Card.js';
 import pen  from '../images/pen.svg';
 import plus  from '../images/plus.svg';
@@ -13,7 +14,7 @@ function Main(props) {
   const userAvatar = resAuthor.avatar;
 
     return (
-      <main style={{minHeight: `80vh`}}>
+      <main >
         <section className="profile">
           <div className="profile__information">
             <button type='button' className="profile__edit-avatar" onClick={props.onEditAvatar}>

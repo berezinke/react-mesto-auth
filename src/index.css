@@ -45,18 +45,29 @@
 @import url("./blocks/profile-change/profile-change.css");
 @import url("./blocks/profile-change/__input/profile-change__input.css");
 @import url("./blocks/profile-change/__submit/profile-change__submit.css");
+@import url("./blocks/profile-change/_info/profile-change_info.css");
 
 @import url("./blocks/profile-change/__title/profile-change__title.css");
 
 @import url("./blocks/popup/__container/popup__container.css");
+
 @import url("./blocks/popup/__nosave-button/popup__nosave-button.css");
 @import url("./blocks/popup/__nosave-image/popup__nosave-image.css");
 @import url("./blocks/popup/__bigpicture/popup__bigpicture.css");
 @import url("./blocks/popup/__list/popup__list.css");
 @import url("./blocks/popup/__show/popup__show.css");
 @import url("./blocks/popup/__text/popup__text.css");
+@import url("./blocks/popup/__picture/popup__picture.css");
 
 @import url("./blocks/profile-change/__error/profile-change__error.css");
 @import url("./blocks/profile-change/__error/_visible/profile-change__error_visible.css");
 @import url("./blocks/profile-change/__input/_type_error/profile-change__input_type_error.css");
 @import url("./blocks/profile-change/__submit/_disabled/profile-change__submit_disabled.css");
+
+@import url("./blocks/identification/__container/identification__container.css");
+@import url("./blocks/identification/__link/identification__link.css");
+@import url("./blocks/identification/__link/_open/identification__link_open.css");
+@import url("./blocks/identification/__formChange/identification__formChange.css");
+@import url("./blocks/identification/__submit/identification__submit.css");
+@import url("./blocks/identification/__title/identification__title.css");
+@import url("./blocks/identification/__input/identification__input.css");

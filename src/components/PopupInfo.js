@@ -1,24 +1,30 @@
 import React from 'react';
+import closeIcon  from '../images/closeIcon.svg';
+import {infoText} from '../utils/Utils.js';
 
-class PopupInfo extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
-  render() {
-    return (
-      <div className={`popup ${this.props.isOpen && 'popup_opened'}`}>
-        <div className="popup__container">
-          <form className="profile-change" 
-                name={this.props.name} 
-                noValidate>
-            <h3 className="profile-change__title">
-              {this.props.title}
-            </h3>
-          </form>
-        </div>
+function PopupInfo (props) {
+  
+  return (
+    <div className={`popup ${props.isOpened && 'popup_opened'}`}>
+      <div className="popup__container">
+        <button type="button" 
+                className="popup__nosave-button" 
+                id="buttonNoSave"
+                onClick={props.onClose}>
+          <img src={closeIcon} alt="Не сохранять" className="popup__nosave-image"/>
+        </button>
+        <form className="profile-change_info" 
+              name='infoName'
+              noValidate>
+          <img src={infoText[props.infoPop].image} alt="Улыбаемся и машем" className="popup__picture"/>
+          <h3 className="profile-change__title" style={{textAlign: `center`}}>
+            {infoText[props.infoPop].text}
+          </h3>
+          
+        </form>
       </div>
-    );
-  }
+    </div>
+  )
 } 
+
 export default PopupInfo;
