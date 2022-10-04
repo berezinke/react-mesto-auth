@@ -8,7 +8,7 @@ function PopupInfo (props) {
     <div className={`popup ${props.isOpened && 'popup_opened'}`}>
       <div className="popup__container">
         <button type="button" 
-                className="popup__nosave-button" 
+                className={`popup__nosave-button ${props.infoPop == 'messageInfo' && 'popup__nosave-button_inActive'}`}
                 id="buttonNoSave"
                 onClick={props.onClose}>
           <img src={closeIcon} alt="Не сохранять" className="popup__nosave-image"/>

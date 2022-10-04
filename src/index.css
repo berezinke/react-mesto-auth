@@ -52,6 +52,7 @@
 @import url("./blocks/popup/__container/popup__container.css");
 
 @import url("./blocks/popup/__nosave-button/popup__nosave-button.css");
+@import url("./blocks/popup/__nosave-button/_inActive/popup__nosave-button_inActive.css");
 @import url("./blocks/popup/__nosave-image/popup__nosave-image.css");
 @import url("./blocks/popup/__bigpicture/popup__bigpicture.css");
 @import url("./blocks/popup/__list/popup__list.css");

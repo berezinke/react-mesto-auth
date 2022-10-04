@@ -10,7 +10,7 @@ import EditProfilePopup from '../components/EditProfilePopup.js';
 import EditAvatarPopup from '../components/EditAvatarPopup.js';
 import AddPlacePopup from '../components/AddPlacePopup.js';
 import exApi from '../utils/Api.js';
-import {objAuth} from '../utils/Utils.js';
+import {infoText, objAuth} from '../utils/Utils.js';
 
 // использование контекста
 import {CurrentUserContext} from '../context/CurrentUserContext.js';
@@ -47,21 +47,23 @@ function App() {
   const [mailUserInfo, setMailUserInfo] = React.useState('');
           
   React.useEffect(() => {
-    Promise.all([promiseAuthorInfo, promiseAllCard])
-     .then(([resAuthor, resAllCards]) => {
-      setCurrentUser(resAuthor);
-      setCards(resAllCards);
-     })
-     .catch((err) => {
-        console.log('Ошибка. Запрос к серверу не выполнен: ', err)
-     })
-  }, []);
+    if (loggedIn) {
+      Promise.all([promiseAuthorInfo, promiseAllCard])
+      .then(([resAuthor, resAllCards]) => {
+       setCurrentUser(resAuthor);
+       setCards(resAllCards);
+      })
+      .catch((err) => {
+         console.log('Ошибка. Запрос к серверу не выполнен: ', err)
+      })
+    }    
+  }, [loggedIn]);
 
   React.useEffect(() => {
     if (!loggedIn) {
       handleTokenCheck(exApi);
     }
-  }, [loggedIn]);
+  }, []); //loggedIn
 
   // Kusto
   function handleEditProfileClick() {
@@ -112,8 +114,8 @@ function App() {
     const isLiked = card.likes.some(i => i._id === currentUser._id);
 
     // setThinkingInfo(infoText.messageInfo);
-
-    // setInfoOpen(true);
+    setMessageInfo('messageInfo');
+    setInfoOpen(true);
     (isLiked ? exApi.putoffLikeFromCard(card._id) : exApi.putLikeToCard(card._id))    
     .then((newCard) => {
       setCards((cards) => cards.map((c) => c._id === card._id ? newCard : c));
@@ -122,12 +124,13 @@ function App() {
       console.log('Ошибка. Запрос к серверу не выполнен: ', err)
    })
    .finally(() =>{
-    // setInfoOpen(false);
+    setInfoOpen(false);
    });
   }
   function handleCardDelete(card) {
     // setThinkingInfo(infoText.messageInfo);
-    // setInfoOpen(true);
+    setMessageInfo('messageInfo');
+    setInfoOpen(true);
     exApi.deleteCardFromServer(card._id)    
     .then((newCard) => {
       setCards((cards) => cards.filter((c) => {return (c._id != card._id)}))
@@ -136,7 +139,7 @@ function App() {
       console.log('Ошибка. Запрос к серверу не выполнен: ', err)
    })
    .finally(() =>{
-    // setInfoOpen(false);
+    setInfoOpen(false);
    });
   }
   function handleAddPlaceSubmit (cardInfo) {
@@ -179,6 +182,49 @@ function App() {
         }
       })
     }
+  }
+
+  // Login
+  function handleSubmitLogin (userEmail, userPassword, setUserEmail, setUserPassword) {
+    exApi.userAuthorize(userEmail, userPassword)
+    .then((data) => {
+      if (data.token){
+        localStorage.setItem('jwt', data.token);
+        setMailUserInfo(userEmail);
+        setLoggedIn(true);
+        writeResultsAuth(userEmail, setUserEmail, setUserPassword);
+        history.push('/')            
+      } 
+    })
+    .catch((err) => {
+      setMessageInfo('messageUps');
+      setInfoOpen(true);
+      console.log(err)
+    })
+  }
+  // Register
+  function handleSubmitRegister (userEmail, userPassword, setUserEmail, setUserPassword ) {
+    exApi.userRegister(userEmail, userPassword)
+    .then((res) => {
+      if (res.statusCode !== 400) {
+        history.push('/sign-in');
+      }
+      writeResultsAuth(userEmail, setUserEmail, setUserPassword);
+      history.push('/sign-in')
+    })
+    
+    .catch((err) => {
+      setMessageInfo('messageUps');
+      setInfoOpen(true);
+      console.log(err)})
+  }
+
+  function writeResultsAuth (userEmail, setUserEmail, setUserPassword) {
+    setMessageInfo('messageOk');
+    setInfoOpen(true);
+        
+    setUserEmail('');
+    setUserPassword('');
   }
 
   return (
@@ -227,17 +273,18 @@ function App() {
             isRegisterPopupOpen = {isRegisterPopupOpen}
             setInfoOpen = {setInfoOpen}
             isInfoOpen = {isInfoOpen}
-            messageInfo = {messageInfo}
-            setMessageInfo = {setMessageInfo}
-            mailUserInfo = {mailUserInfo}
-            setMailUserInfo = {setMailUserInfo}
-            history = {history}
+            handleSubmitRegister = {handleSubmitRegister}
+            // messageInfo = {messageInfo}
+            // setMessageInfo = {setMessageInfo}
+            // mailUserInfo = {mailUserInfo}
+            // setMailUserInfo = {setMailUserInfo}
+            // history = {history}
             setArrAuth = {setArrAuth}
           />
         </Route>
         <Route path="/sign-in">
           <Login
-            exApi={exApi}
+            // exApi={exApi}
             loggedIn={loggedIn}
             handleLogin={setLoggedIn}
             handleLoginOpen={setLoginPopupOpen}
@@ -248,14 +295,17 @@ function App() {
             isRegisterPopupOpen = {isRegisterPopupOpen}
             setInfoOpen = {setInfoOpen}
             isInfoOpen = {isInfoOpen}
-            messageInfo = {messageInfo}
-            setMessageInfo = {setMessageInfo}
-            mailUserInfo = {mailUserInfo}
-            setMailUserInfo = {setMailUserInfo}
+
+            handleSubmitLogin = {handleSubmitLogin}
+            // messageInfo = {messageInfo}
+            // setMessageInfo = {setMessageInfo}
+            // mailUserInfo = {mailUserInfo}
+            // setMailUserInfo = {setMailUserInfo}
           />      
         </Route>
       </Switch>
       <Footer />
+      
 
       <EditProfilePopup
         isOpen = {isEditProfilePopupOpen}

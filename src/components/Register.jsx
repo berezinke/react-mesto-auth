@@ -20,22 +20,7 @@ function Register(props) {
     if (!userEmail || !userPassword){
       return;
     }
-    props.exApi.userRegister(userEmail, userPassword)
-    .then((res) => {
-      if (res.statusCode !== 400) {
-        props.history.push('/sign-in');
-      }
-
-      props.setMessageInfo('messageOk');
-      props.setInfoOpen(true);
-      props.setMailUserInfo(userEmail);
-      
-      setUserEmail('');
-      setUserPassword('');
-      props.handleLogin(true);
-      props.history.push('/')
-    })
-    .catch(err => console.log(err))
+    props.handleSubmitRegister (userEmail, userPassword, setUserEmail, setUserPassword )
   }
   // props.setRegisterPopupOpen(true);
   return (

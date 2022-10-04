@@ -1,16 +1,26 @@
 import logo  from '../images/header-logo.svg';
 import React from 'react';
 import {objAuth} from '../utils/Utils.js';
+import { useLocation } from 'react-router-dom';
 
 function Header(props) {
-    
-  React.useEffect(() => {
+  const location = useLocation();
+
+  if (location.pathname == '/') {
+    props.setArrAuth(objAuth.authExit);
+  } else if (location.pathname == '/sign-in'){
+    props.setArrAuth(objAuth.authReg);
+  } else {
+    props.setArrAuth(objAuth.authEnter);
+  }
+  
+  /*React.useEffect(() => {
     if (props.loggedIn) {
       props.setArrAuth(objAuth.authExit);
     } else {
       props.setArrAuth(objAuth.authReg);
     }    
-  }, [props.loggedIn])
+  }, [props.loggedIn])*/
 
   function changeFormAuth() {
     if (!props.loggedIn) {
