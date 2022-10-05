@@ -30,8 +30,8 @@ function App() {
 
   const [currentUser , setCurrentUser] = React.useState({});
   const [cards, setCards] = React.useState([]);
-  const promiseAuthorInfo = exApi.getAuthorInfo();
-  const promiseAllCard = exApi.getInitCards();
+  // const promiseAuthorInfo = exApi.getAuthorInfo();
+  // const promiseAllCard = exApi.getInitCards();
 
   const [isThinking, setIsThinking] = React.useState(false);
 
@@ -48,6 +48,9 @@ function App() {
           
   React.useEffect(() => {
     if (loggedIn) {
+      const promiseAuthorInfo = exApi.getAuthorInfo();
+      const promiseAllCard = exApi.getInitCards();
+
       Promise.all([promiseAuthorInfo, promiseAllCard])
       .then(([resAuthor, resAllCards]) => {
        setCurrentUser(resAuthor);
@@ -63,7 +66,7 @@ function App() {
     if (!loggedIn) {
       handleTokenCheck(exApi);
     }
-  }, []); //loggedIn
+  }, []); //loggedIn*/
 
   // Kusto
   function handleEditProfileClick() {
@@ -185,14 +188,14 @@ function App() {
   }
 
   // Login
-  function handleSubmitLogin (userEmail, userPassword, setUserEmail, setUserPassword) {
+  function handleSubmitLogin (userEmail, userPassword) {
     exApi.userAuthorize(userEmail, userPassword)
     .then((data) => {
       if (data.token){
         localStorage.setItem('jwt', data.token);
         setMailUserInfo(userEmail);
         setLoggedIn(true);
-        writeResultsAuth(userEmail, setUserEmail, setUserPassword);
+        writeResultsAuth(userEmail);
         history.push('/')            
       } 
     })
@@ -203,13 +206,13 @@ function App() {
     })
   }
   // Register
-  function handleSubmitRegister (userEmail, userPassword, setUserEmail, setUserPassword ) {
+  function handleSubmitRegister (userEmail, userPassword) {
     exApi.userRegister(userEmail, userPassword)
     .then((res) => {
       if (res.statusCode !== 400) {
         history.push('/sign-in');
       }
-      writeResultsAuth(userEmail, setUserEmail, setUserPassword);
+      writeResultsAuth(userEmail);
       history.push('/sign-in')
     })
     
@@ -219,12 +222,28 @@ function App() {
       console.log(err)})
   }
 
-  function writeResultsAuth (userEmail, setUserEmail, setUserPassword) {
+  function writeResultsAuth () {
     setMessageInfo('messageOk');
     setInfoOpen(true);
-        
-    setUserEmail('');
-    setUserPassword('');
+  }
+
+  // Header
+  function changeFormAuth(location) {
+    let path = '/sign-in';
+
+    if (!loggedIn) {
+      if (location.pathname == '/sign-in') {
+        path = '/sign-up';
+        setRegisterPopupOpen(false)
+      } else {
+        setRegisterPopupOpen(true)        
+      }
+    } else {
+      localStorage.removeItem('jwt');
+      setMailUserInfo('');
+      setLoggedIn(false);      
+    }
+    history.push(path)
   }
 
   return (
@@ -244,6 +263,8 @@ function App() {
 
         setRegisterPopupOpen = {setRegisterPopupOpen}
         isRegisterPopupOpen = {isRegisterPopupOpen}
+
+        changeFormAuth = {changeFormAuth}
       />
       <Switch>
         <ProtectedRoute exact path="/"
@@ -274,7 +295,7 @@ function App() {
             setInfoOpen = {setInfoOpen}
             isInfoOpen = {isInfoOpen}
             handleSubmitRegister = {handleSubmitRegister}
-            // messageInfo = {messageInfo}
+            messageInfo = {messageInfo}
             // setMessageInfo = {setMessageInfo}
             // mailUserInfo = {mailUserInfo}
             // setMailUserInfo = {setMailUserInfo}
@@ -297,7 +318,7 @@ function App() {
             isInfoOpen = {isInfoOpen}
 
             handleSubmitLogin = {handleSubmitLogin}
-            // messageInfo = {messageInfo}
+            messageInfo = {messageInfo}
             // setMessageInfo = {setMessageInfo}
             // mailUserInfo = {mailUserInfo}
             // setMailUserInfo = {setMailUserInfo}
@@ -356,4 +377,9 @@ function App() {
 export default withRouter(App);
 
 /*
+
+
+
+
+
 */

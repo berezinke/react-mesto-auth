@@ -8,6 +8,13 @@ function Register(props) {
   const [userEmail, setUserEmail] = React.useState('');
   const [userPassword, setUserPassword] = React.useState('');
 
+  /*React.useEffect(() => {
+    if (props.messageInfo === 'messageOk') {
+      setUserEmail('');
+      setUserPassword('');
+    }
+  }, [props.messageInfo]);*/
+
   function handleChangeUserEmail(e) {
     setUserEmail(e.target.value);    
   }
@@ -20,7 +27,7 @@ function Register(props) {
     if (!userEmail || !userPassword){
       return;
     }
-    props.handleSubmitRegister (userEmail, userPassword, setUserEmail, setUserPassword )
+    props.handleSubmitRegister (userEmail, userPassword)
   }
   // props.setRegisterPopupOpen(true);
   return (

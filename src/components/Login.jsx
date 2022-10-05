@@ -6,6 +6,13 @@ function Login(props) {
   const [userEmail, setUserEmail] = React.useState('');
   const [userPassword, setUserPassword] = React.useState('');
 
+  /*React.useEffect(() => {
+    if (props.messageInfo === 'messageOk') {
+      setUserEmail('');
+      setUserPassword('');
+    }
+  }, [props.messageInfo]);*/
+
   function handleChangeUserEmail(e) {
     setUserEmail(e.target.value);    
   }
@@ -22,7 +29,7 @@ function Login(props) {
     if (!userEmail || !userPassword){
       return;
     }
-    props.handleSubmitLogin(userEmail, userPassword, setUserEmail, setUserPassword)
+    props.handleSubmitLogin(userEmail, userPassword)
   }
 
   return (

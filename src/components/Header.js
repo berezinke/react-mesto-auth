@@ -6,24 +6,41 @@ import { useLocation } from 'react-router-dom';
 function Header(props) {
   const location = useLocation();
 
-  if (location.pathname == '/') {
-    props.setArrAuth(objAuth.authExit);
-  } else if (location.pathname == '/sign-in'){
-    props.setArrAuth(objAuth.authReg);
-  } else {
-    props.setArrAuth(objAuth.authEnter);
-  }
-  
-  /*React.useEffect(() => {
-    if (props.loggedIn) {
-      props.setArrAuth(objAuth.authExit);
+  function setChangepathName (location) {
+    if (location.pathname === '/') {
+      return objAuth.authExit[1];
+    } else if (location.pathname === '/sign-in'){
+      return objAuth.authReg[1];
     } else {
-      props.setArrAuth(objAuth.authReg);
-    }    
-  }, [props.loggedIn])*/
+      return objAuth.authEnter[1];
+    }
+  }
 
   function changeFormAuth() {
-    if (!props.loggedIn) {
+    props.changeFormAuth(location);
+  }
+
+  return (
+    <header className="header">
+      <img src={logo} alt="Лого Место" className="logo"/>
+      <button type="button" 
+              style={{backgroundColor: `black`, color: `#ffffff`, width: `250px`, 
+                      display: 'flex', justifyContent: 'space-between'}} 
+                      onClick = {changeFormAuth}>
+        <p>
+          {props.mailUserInfo}
+        </p>
+        <p>
+          {setChangepathName(location)}
+        </p>
+      </button>
+    </header>
+  );
+}
+
+export default Header;
+/*
+if (!props.loggedIn) {
       if (props.arrAuth[0] === 'sign-in') {
         props.setArrAuth(objAuth.authReg)
         props.setRegisterPopupOpen(false)
@@ -38,26 +55,20 @@ function Header(props) {
       props.setArrAuth(objAuth.authEnter);
     }
     props.history.push(props.arrAuth[0]);
-  }
+*/
 
-  return (
-    <header className="header">
-      <img src={logo} alt="Лого Место" className="logo"/>
-      <button type="button" 
-              style={{backgroundColor: `black`, color: `#ffffff`, width: `250px`, 
-                      display: 'flex', justifyContent: 'space-between'}} 
-              onClick={changeFormAuth}>
-        <p>
-          {props.mailUserInfo}
-        </p>
-        <p>
-          {props.arrAuth[1]}
-        </p>
-      </button>
-    </header>
-  );
-}
-
-export default Header;
-
-// , width: `300px`, display: 'flex', justifyContent: 'space-between'}
+/*if (location.pathname == '/') {
+    props.setArrAuth(objAuth.authExit);
+  } else if (location.pathname == '/sign-in'){
+    props.setArrAuth(objAuth.authReg);
+  } else {
+    props.setArrAuth(objAuth.authEnter);
+  }*/
+  
+  /*React.useEffect(() => {
+    if (props.loggedIn) {
+      props.setArrAuth(objAuth.authExit);
+    } else {
+      props.setArrAuth(objAuth.authReg);
+    }    
+  }, [props.loggedIn])*/
