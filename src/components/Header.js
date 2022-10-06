@@ -27,7 +27,7 @@ function Header(props) {
               style={{backgroundColor: `black`, color: `#ffffff`, width: `250px`, 
                       display: 'flex', justifyContent: 'space-between'}} 
                       onClick = {changeFormAuth}>
-        <p>
+        <p style={{marginRight: 10}}>
           {props.mailUserInfo}
         </p>
         <p>

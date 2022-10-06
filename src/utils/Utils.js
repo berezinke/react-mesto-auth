@@ -50,6 +50,7 @@ export const baseTitleValidToken = {'Accept': 'application/json', "Content-Type"
 export const baseSuccessReturnValidToken = {"_id":"1f525cf06e02630312f3fed7", "email":"email@email.ru"};
 export const objAuth = {authReg:['sign-up', '  Зарегистрироваться'], authEnter:['sign-in', '  Войти'], authExit:['sign-in', '  Выйти']};
 
-export const infoText = {messageOk: {text: 'Вы успешно зарегистрировались!', image: okPic},
-                    messageUps: {text: 'Что-то пошло не так! Попробуйте еще раз.', image: upsPic},
-                    messageInfo: {text: 'Вношу изменения в базу...', image: okPic}};
+export const infoText = {messageOkReg: {text: 'Вы успешно зарегистрировались!', image: okPic},
+                         messageOkEnter: {text: 'Вы успешно авторизовались!', image: okPic},
+                         messageUps: {text: 'Что-то пошло не так! Попробуйте еще раз.', image: upsPic},
+                        messageInfo: {text: 'Вношу изменения в базу...', image: okPic}};

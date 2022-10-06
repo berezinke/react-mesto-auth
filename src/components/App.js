@@ -43,7 +43,7 @@ function App() {
 
   const history = useHistory();
 
-  const [messageInfo, setMessageInfo] = React.useState('messageOk');
+  const [messageInfo, setMessageInfo] = React.useState('messageOkEnter');
   const [mailUserInfo, setMailUserInfo] = React.useState('');
           
   React.useEffect(() => {
@@ -195,7 +195,7 @@ function App() {
         localStorage.setItem('jwt', data.token);
         setMailUserInfo(userEmail);
         setLoggedIn(true);
-        writeResultsAuth(userEmail);
+        writeResultsAuth('messageOkEnter');
         history.push('/')            
       } 
     })
@@ -212,7 +212,7 @@ function App() {
       if (res.statusCode !== 400) {
         history.push('/sign-in');
       }
-      writeResultsAuth(userEmail);
+      writeResultsAuth('messageOkReg');
       history.push('/sign-in')
     })
     
@@ -222,8 +222,8 @@ function App() {
       console.log(err)})
   }
 
-  function writeResultsAuth () {
-    setMessageInfo('messageOk');
+  function writeResultsAuth (typeMessage) {
+    setMessageInfo(typeMessage);
     setInfoOpen(true);
   }
 
