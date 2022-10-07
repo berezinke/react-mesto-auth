@@ -23,17 +23,16 @@ function Header(props) {
   return (
     <header className="header">
       <img src={logo} alt="Лого Место" className="logo"/>
-      <button type="button" 
-              style={{backgroundColor: `black`, color: `#ffffff`, width: `250px`, 
-                      display: 'flex', justifyContent: 'space-between'}} 
-                      onClick = {changeFormAuth}>
-        <p style={{marginRight: 10}}>
+      <div style={{width: `250px`, display: 'flex', justifyContent: 'flex-end'}}>
+        <p style={{marginRight: 10, color: `#ffffff`}}>
           {props.mailUserInfo}
         </p>
-        <p>
+        <button type="button" 
+                className='header__button' 
+                onClick = {changeFormAuth}>
           {setChangepathName(location)}
-        </p>
-      </button>
+        </button>
+      </div>
     </header>
   );
 }
